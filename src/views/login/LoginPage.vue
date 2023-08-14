@@ -2,19 +2,51 @@
     <div class="wrapper">
         <img class="wrapper__img" src="https://i.imgur.com/ckVagRx.png" />
         <div class="wrapper__input">
-            <input class="wrapper__input__content" placeholder="Email or phone number " />
+            <input class="wrapper__input__content" placeholder="User name " v-model="data.username" />
         </div>
         <div class="wrapper__input">
-            <input class="wrapper__input__content" placeholder="Password" type="password" />
+            <input class="wrapper__input__content" placeholder="Password" type="password" v-model="data.password" />
         </div>
-        <div class="wrapper__login-button">Sign in</div>
-        <div class="wrapper__login-link">Sign up</div>
+        <div class="wrapper__login-button" @click="handleLogin">Sign in</div>
+        <div class="wrapper__login-link" @click="handleRegisterClick">Sign up</div>
     </div>
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+import { post } from '../../utils/request'
+import { reactive } from 'vue';
+
 export default {
-  name: 'LoginPage'
+    name: 'LoginPage',
+    setup() {
+        const data = reactive({
+            username: '',
+            password: ''
+        });
+        const router = useRouter();
+        const handleLogin = async () => {
+            try {
+                const result = await post('/api/user/login', {
+                    username: data.username,
+                    password: data.password
+                });
+                if (result?.errno === 0) {
+                    localStorage.isLogin = true;
+                    router.push({ name: 'Home' });
+                } else {
+                    alert('Sign in failed');
+                }
+            } catch (error) {
+                alert('Request failed');
+            }
+
+        };
+        const handleRegisterClick = () => {
+            router.push({ name: 'Register' })
+        };
+        return { handleLogin, handleRegisterClick, data }
+    }
 }
 </script>
 
