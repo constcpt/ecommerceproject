@@ -5,7 +5,13 @@
             <input class="wrapper__input__content" placeholder="User name " v-model="username" />
         </div>
         <div class="wrapper__input">
-            <input class="wrapper__input__content" placeholder="Password" type="password" v-model="password" />
+            <input 
+                class="wrapper__input__content" 
+                placeholder="Password" 
+                type="password" 
+                v-model="password" 
+                autocomplete="new-password"
+            />
         </div>
         <div class="wrapper__login-button" @click="handleLogin">Sign in</div>
         <div class="wrapper__login-link" @click="handleRegisterClick">Sign up</div>
@@ -19,13 +25,23 @@ import { useRouter } from 'vue-router';
 import { post } from '../../utils/request'
 import toast, { useToastEffect } from '../../components/toast';
 
-// Login 相关的逻辑均封装在 useLoginEffect 函数里
+// 处理登录跳转逻辑，Login 相关的逻辑均封装在 useLoginEffect 函数里
 const useLoginEffect = (showToast) => {
     const router = useRouter();
     const data = reactive({ username: '', password: '' });
     const handleLogin = async () => {
+        // 对用户输入的数据进行校验
+        if (!data.username ) {
+            showToast('Please enter your user name!');
+            return;
+        }
+        if (!data.password) {
+            showToast('Please enter your password!');
+            return;
+        }
+        // 发送登录请求
         try {
-            const result = await post('/api/user/login11', {
+            const result = await post('/api/user/login', {
                 username: data.username,
                 password: data.password
             });
@@ -43,7 +59,7 @@ const useLoginEffect = (showToast) => {
     return { username, password, handleLogin };
 }
 
-// Register 相关的逻辑均封装在 useRegisterEffect 函数里
+// 处理注册跳转，Register 相关的逻辑均封装在 useRegisterEffect 函数里
 const useRegisterEffect = () => {
     const router = useRouter();
     const handleRegisterClick = () => {

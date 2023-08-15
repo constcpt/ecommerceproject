@@ -39,5 +39,7 @@ export const useToastEffect = () => {
   background: rgba(0, 0, 0, .35);
   border-radius: .05rem;
   color: #FFF;
+  font-size: .14rem;
+  text-align: center;
 }
 </style>
