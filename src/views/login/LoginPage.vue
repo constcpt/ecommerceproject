@@ -2,59 +2,69 @@
     <div class="wrapper">
         <img class="wrapper__img" src="https://i.imgur.com/ckVagRx.png" />
         <div class="wrapper__input">
-            <input class="wrapper__input__content" placeholder="User name " v-model="data.username" />
+            <input class="wrapper__input__content" placeholder="User name " v-model="username" />
         </div>
         <div class="wrapper__input">
-            <input class="wrapper__input__content" placeholder="Password" type="password" v-model="data.password" />
+            <input class="wrapper__input__content" placeholder="Password" type="password" v-model="password" />
         </div>
         <div class="wrapper__login-button" @click="handleLogin">Sign in</div>
         <div class="wrapper__login-link" @click="handleRegisterClick">Sign up</div>
-        <toast v-if="toastData.showToast" :message="toastData.toastMessage" />
+        <toast v-if="show" :message="toastMessage" />
     </div>
 </template>
 
 <script>
-import { reactive } from 'vue';
+import { reactive, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import { post } from '../../utils/request'
 import toast, { useToastEffect } from '../../components/toast';
 
+// Login 相关的逻辑均封装在 useLoginEffect 函数里
+const useLoginEffect = (showToast) => {
+    const router = useRouter();
+    const data = reactive({ username: '', password: '' });
+    const handleLogin = async () => {
+        try {
+            const result = await post('/api/user/login11', {
+                username: data.username,
+                password: data.password
+            });
+            if (result?.errno === 0) {
+                localStorage.isLogin = true;
+                router.push({ name: 'Home' });
+            } else {
+                showToast('Sign in failed');
+            }
+        } catch (error) {
+            showToast('Request failed');
+        }
+    };
+    const { username, password } = toRefs(data);
+    return { username, password, handleLogin };
+}
+
+// Register 相关的逻辑均封装在 useRegisterEffect 函数里
+const useRegisterEffect = () => {
+    const router = useRouter();
+    const handleRegisterClick = () => {
+        router.push({ name: 'Register' })
+    };
+    return { handleRegisterClick };
+};
+
 export default {
     name: 'LoginPage',
-    components: {
-        toast
-    },
+    components: { toast },
+    // setup 函数的职责就是显示代码执行的流程，没有过多的业务逻辑
     setup() {
-        const router = useRouter();
-        const data = reactive({
-            username: '',
-            password: ''
-        });
-        const { toastData, showToast } = useToastEffect();
+        const { show, toastMessage, showToast } = useToastEffect();
+        const { username, password, handleLogin } = useLoginEffect(showToast);
+        const { handleRegisterClick } = useRegisterEffect();
 
-        const handleLogin = async () => {
-            try {
-                const result = await post('/api/user/login111', {
-                    username: data.username,
-                    password: data.password
-                });
-                if (result?.errno === 0) {
-                    localStorage.isLogin = true;
-                    router.push({ name: 'Home' });
-                } else {
-                    showToast('Sign in failed');
-                }
-            } catch (error) {
-                showToast('Request failed');
-            }
-
+        return {
+            username, password, show, toastMessage,
+            handleLogin, handleRegisterClick
         };
-
-        const handleRegisterClick = () => {
-            router.push({ name: 'Register' })
-        };
-
-        return { handleLogin, handleRegisterClick, data, toastData };
     }
 }
 </script>
