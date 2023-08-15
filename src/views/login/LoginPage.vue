@@ -9,6 +9,7 @@
         </div>
         <div class="wrapper__login-button" @click="handleLogin">Sign in</div>
         <div class="wrapper__login-link" @click="handleRegisterClick">Sign up</div>
+        <toast v-if="data.showToast" :message="data.toastMessage"/>
     </div>
 </template>
 
@@ -16,18 +17,32 @@
 import { useRouter } from 'vue-router';
 import { post } from '../../utils/request'
 import { reactive } from 'vue';
+import toast from '../../components/toast';
 
 export default {
     name: 'LoginPage',
+    components: {
+        toast
+    },
     setup() {
         const data = reactive({
             username: '',
-            password: ''
+            password: '',
+            showToast: false,
+            toastMessage: ''
         });
         const router = useRouter();
+        const showToast = (message) => {
+            data.showToast = true;
+            data.toastMessage = message;
+            setTimeout(() => {
+                data.showToast = false;
+                data.toastMessage = '';
+            }, 2000);
+        }
         const handleLogin = async () => {
             try {
-                const result = await post('/api/user/login', {
+                const result = await post('/api/user/login111', {
                     username: data.username,
                     password: data.password
                 });
@@ -35,10 +50,10 @@ export default {
                     localStorage.isLogin = true;
                     router.push({ name: 'Home' });
                 } else {
-                    alert('Sign in failed');
+                    showToast('Sign in failed');
                 }
             } catch (error) {
-                alert('Request failed');
+                showToast('Request failed');
             }
 
         };
