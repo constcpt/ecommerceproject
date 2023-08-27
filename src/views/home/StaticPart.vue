@@ -112,8 +112,8 @@ export default {
     margin-bottom: .12rem;
     line-height: .32rem;
     width: 3.39rem;
-    background: #F5F5F5;
-    color: #B7B7B7;
+    background: $search-bgColor;
+    color: $search-fontColor;
     border-radius: .16rem;
 
     .iconfont {
