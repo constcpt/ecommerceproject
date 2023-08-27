@@ -1,22 +1,34 @@
 <template>
   <div class="content">
     <div class="category">
-      <div class="category__item category__item--active">Products</div>
+      <!-- <div class="category__item category__item--active">Products</div>
       <div class="category__item">Fruits</div>
-      <div class="category__item">Drinks</div>
-      <div class="category__item">Meat</div>
-      <div class="category__item">Seafood</div>
-      <div class="category__item">Bakery</div>
+      <div class="category__item">Seafood</div> -->
+      <div
+        :class="{
+          category__item: true,
+          'category__item--active': currentTab === item.tab,
+        }"
+        v-for="item in categories"
+        :key="item.name"
+        @click="() => handleTabClick(item.tab)"
+      >
+        {{ item.name }}
+      </div>
     </div>
     <div class="product">
-      <div class="product__item">
-        <img class="product__item__img" src="https://i.imgur.com/BFCNUeA.png" />
+      <div class="product__item" v-for="item in list" :key="item._id">
+        <img class="product__item__img" :src="item.imgUrl" />
         <div class="product__item__detail">
-          <h4 class="product__item__title">Orange 500g</h4>
-          <p class="product__item__sales">Monthly sales 30 items</p>
+          <h4 class="product__item__title">{{ item.name }}</h4>
+          <p class="product__item__sales">
+            Monthly sales {{ item.sales }} items
+          </p>
           <p class="product__item__price">
-            <span class="product__item__yen">&dollar;</span>33.6
-            <span class="product__item__origin">&dollar;66.6</span>
+            <span class="product__item__yen">&dollar;</span>{{ item.price }}
+            <span class="product__item__origin"
+              >&dollar;{{ item.oldPrice }}</span
+            >
           </p>
         </div>
         <div class="product__number">
@@ -25,7 +37,7 @@
           <span class="product__number__plus">+</span>
         </div>
       </div>
-      <div class="product__item">
+      <!-- <div class="product__item">
         <img class="product__item__img" src="https://i.imgur.com/BFCNUeA.png" />
         <div class="product__item__detail">
           <h4 class="product__item__title">Orange 500g</h4>
@@ -79,13 +91,93 @@
             <span class="product__item__origin">&dollar;66.6</span>
           </p>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import { reactive, ref, toRefs, watchEffect } from 'vue';
+import { useRoute } from "vue-router";
+import { get } from "../../utils/request";
+
+const categories = [
+  { name: "Products", tab: "all" },
+  { name: "Fruits", tab: "fruit" },
+  { name: "Seafood", tab: "seafood" },
+];
+
+// Tab 切换相关的逻辑
+const useTabEffect = () => {
+  const currentTab = ref(categories[0].tab);
+  const handleTabClick = (tab) => {
+    currentTab.value = tab;
+  };
+  return { currentTab, handleTabClick };
+};
+
+// 列表内容相关的逻辑
+const useCurrentListEffect = (currentTab) => {
+  const route = useRoute();
+  const shopId = route.params.id;
+  const content = reactive({ list: [] });
+  // 获取列表数据
+  const getContentData = async () => {
+    const result = await get(`/api/shop/${shopId}/products`, {
+      tab: currentTab.value,
+    });
+    if (result?.errno === 0 && result?.data?.length) {
+      content.list = result.data;
+    }
+  };
+
+  watchEffect(() => {
+    getContentData();
+  });
+
+  const { list } = toRefs(content);
+  return { list };
+};
+
+export default {
+  name: "Content",
+  setup() {
+    // const categories = [
+    //   {
+    //     name: "Products",
+    //     tab: "all",
+    //   },
+    //   {
+    //     name: "Fruits",
+    //     tab: "fruit",
+    //   },
+    //   {
+    //     name: "Seafood",
+    //     tab: "seafood",
+    //   },
+    // ];
+    // const data = reactive({
+    //   currentTab: categories[0].tab,
+    //   contentList: [],
+    // });
+    // const getContentData = async (tab) => {
+    //   const result = await get("/api/shop/1/products", { tab });
+    //   if (result?.errno === 0 && result?.data?.length) {
+    //     data.contentList = result.data;
+    //   }
+    // };
+    // const handleCategoryClick = (tab) => {
+    //   getContentData(tab);
+    //   data.currentTab = tab;
+    // };
+    // getContentData("all");
+    // const { contentList, currentTab } = toRefs(data);
+    // return { categories, currentTab, contentList, handleCategoryClick };
+    const { currentTab, handleTabClick } = useTabEffect()
+    const { list } = useCurrentListEffect(currentTab)
+    return { categories, currentTab, handleTabClick, list}
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -135,8 +227,8 @@ export default {};
     }
     &__title {
       margin: 0;
-      line-height: .2rem;
-      font-size: .14rem;
+      line-height: 0.2rem;
+      font-size: 0.14rem;
       color: $content-fontcolor;
       @include ellipsis;
     }
@@ -147,17 +239,17 @@ export default {};
     }
     &__price {
       margin: 0;
-      line-height: .2rem;
-      font-size: .14rem;
+      line-height: 0.2rem;
+      font-size: 0.14rem;
       color: $hightlight-fontColor;
     }
     &__yen {
-      font-size: .12rem;
+      font-size: 0.12rem;
     }
     &__origin {
-      margin-left: .06rem;
-      line-height: .2rem;
-      font-size: .12rem;
+      margin-left: 0.06rem;
+      line-height: 0.2rem;
+      font-size: 0.12rem;
       color: $light-fontColor;
       text-decoration: line-through;
     }
