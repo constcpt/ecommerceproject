@@ -1,32 +1,40 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import HomePage from '../views/home/HomePage.vue'
-import LoginPage from '../views/login/LoginPage.vue'
-import RegisterPage from '../views/register/RegisterPage.vue'
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: HomePage
+    path: "/",
+    name: "Home",
+    component: () =>
+      import(/* webpackChunkName: "home" */ "../views/home/HomePage"),
   },
   {
-    path: '/register',
-    name: 'Register',
-    component: RegisterPage,
-    beforeEnter (to, from, next) {
-      const { isLogin } = localStorage
-      isLogin ? next({ name: 'Home' }) : next()
-    }
+    path: "/shop",
+    name: "Shop",
+    component: () =>
+      import(/* webpackChunkName: "shop" */ "../views/shop/Shop"),
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: LoginPage,
-    beforeEnter (to, from, next) {
-      const { isLogin } = localStorage
-      isLogin ? next({ name: 'Home' }) : next()
-    }
-  }
+    path: "/register",
+    name: "Register",
+    component: () =>
+      import(
+        /* webpackChunkName: "register" */ "../views/register/RegisterPage"
+      ),
+    beforeEnter(to, from, next) {
+      const { isLogin } = localStorage;
+      isLogin ? next({ name: "Home" }) : next();
+    },
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () =>
+      import(/* webpackChunkName: "login" */ "../views/login/LoginPage"),
+    beforeEnter(to, from, next) {
+      const { isLogin } = localStorage;
+      isLogin ? next({ name: "Home" }) : next();
+    },
+  },
   // {
   //   path: '/about',
   //   name: 'about',
@@ -35,12 +43,12 @@ const routes = [
   //   // which is lazy-loaded when the route is visited.
   //   component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
   // }
-]
+];
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
-})
+});
 
 router.beforeEach((to, from, next) => {
   const { isLogin } = localStorage;
