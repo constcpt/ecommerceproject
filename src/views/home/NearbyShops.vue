@@ -1,11 +1,9 @@
 <template>
     <div class="nearby">
         <h3 class="nearby__title">Nearby Shops</h3>
-        <ShopInfo 
-            v-for="item in nearbyList" 
-            :key="item._id" 
-            :item="item" 
-        />
+        <router-link to="/shop" v-for="item in nearbyList" :key="item._id">
+            <ShopInfo :item="item" />
+        </router-link>
         <!-- <div class="nearby__shop" v-for="item in nearbyList" :key="item._id">
             <img :src="item.imgUrl" class="nearby__shop__img">
             <div class="nearby__content">
@@ -81,47 +79,8 @@ export default {
         font-weight: normal;
         color: $content-fontcolor;
     }
-
-    &__shop {
-        display: flex;
-        padding-top: .12rem;
-
-        &__img {
-            margin-right: .16rem;
-            width: .56rem;
-            height: .56rem;
-        }
+    a {
+        text-decoration: none;
     }
-
-    &__content {
-        flex: 1;
-        padding-bottom: .12rem;
-        border-bottom: 1px solid $content-bgColor;
-
-        &__title {
-            line-height: .22rem;
-            font-size: .16rem;
-            color: $content-fontcolor;
-        }
-
-        &__tags {
-            margin-top: .08rem;
-            line-height: .18rem;
-            font-size: .13rem;
-            color: $content-fontcolor;
-        }
-
-        &__tag {
-            margin-right: .16rem;
-        }
-
-        &__highlight {
-            margin: .08rem 0 0 0;
-            line-height: .18rem;
-            font-size: .13rem;
-            color: #E93B3B;
-        }
-    }
-
 }
 </style>
