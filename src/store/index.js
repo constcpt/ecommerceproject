@@ -17,11 +17,11 @@ export default createStore({
       //     count: 2
       //   },
       // },
-    }
+    },
   },
   getters: {},
   mutations: {
-    addItemToCart(state, payload) {
+    changeCartItemInfo(state, payload) {
       const { shopId, productId, productInfo } = payload;
       let shopInfo = state.cartList[shopId];
       if (!shopInfo) {
@@ -32,10 +32,13 @@ export default createStore({
         product = productInfo;
         product.count = 0;
       }
-      product.count += 1;
+      product.count = product.count + payload.num;
+      if (product.count < 0) {
+        product.count = 0;
+      }
       shopInfo[productId] = product;
       state.cartList[shopId] = shopInfo;
-    }
+    },
   },
   actions: {},
   modules: {},
