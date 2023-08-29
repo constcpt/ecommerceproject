@@ -1,5 +1,8 @@
 <template>
-  <div class="mask" v-if="showCart" />
+  <div class="mask" 
+    v-if="showCart" 
+    @click="handleCartShowChange"
+  />
   <div class="cart">
     <div class="product" v-if="showCart">
       <div class="product__header">
@@ -14,11 +17,11 @@
           </span>
           All
         </div>
-        <div
-          class="product__header__clear"
-          @click="() => cleanCartProducts(shopId)"
-        >
-          Clear
+        <div class="product__header__clear">
+          <span 
+            class="product__header__clear__btn"
+            @click="() => cleanCartProducts(shopId)"
+          >Clear</span>
         </div>
       </div>
       <template v-for="item in productList" :key="item._id">
@@ -62,7 +65,9 @@
       <div class="check__info">
         Total: <span class="check__info__price">&dollar;{{ price }}</span>
       </div>
-      <div class="check__btn">Check Out</div>
+      <div class="check__btn">
+        <router-link :to="{name: 'Home'}">Check Out</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -151,20 +156,26 @@ const useCartEffect = (shopId) => {
     changeCartItemInfo, changeCartItemChecked, cleanCartProducts, setCartItemsChecked  };
 };
 
+// 展示和隐藏购物车列表的逻辑
+const toggleCartEffect = () => {
+  const showCart = ref(false);
+  const handleCartShowChange = () => {
+    showCart.value = !showCart.value;
+  };
+  return { showCart, handleCartShowChange };
+};
+
 export default {
   name: "Cart",
   setup() {
     const route = useRoute();
     const shopId = route.params.id;
-    const showCart = ref(false)
-    const handleCartShowChange = () => {
-      showCart.value = !showCart.value;
-    }
 
     const { 
       total, price, productList, allChecked, 
       changeCartItemInfo, changeCartItemChecked, 
       cleanCartProducts, setCartItemsChecked } = useCartEffect(shopId);
+    const { showCart, handleCartShowChange } = toggleCartEffect();
     return { 
       total, price, shopId, 
       productList, allChecked, showCart,
@@ -195,32 +206,37 @@ export default {
   right: 0;
   bottom: 0;
   z-index: 2;
-  background: #FFF;
+  background: $bgColor;
 }
 
 .product {
   overflow-y: scroll;
   flex: 1;
-  background: #FFF;
+  background: $bgColor;
   &__header {
     display: flex;
     line-height: .52rem;
-    border-bottom: 1px solid #F1F1F1;
+    border-bottom: 1px solid $content-bgColor;
     font-size: .14rem;
-    color: #333;
+    color: $content-fontcolor;
     &__all {
       width: .64rem;
       margin-left: .18rem;
     }
     &__icon {
       display: inline-block;
-      color: #0091FF;
+      margin-right: .1rem;
+      vertical-align: top;
+      color: $btn-bgColor;
       font-size: .2rem;
     }
     &__clear {
       flex: 1;
       margin-right: .16rem;
       text-align: right;
+      &__btn {
+        display: inline-block;
+      }
     }
   }
   &__item {
@@ -233,7 +249,7 @@ export default {
     &__checked {
       line-height: .5rem;
       margin-right: .2rem;
-      color: #0091FF;
+      color: $btn-bgColor;
       font-size: .2rem;
     }
 
@@ -277,7 +293,7 @@ export default {
     .product__number {
       position: absolute;
       right: 0;
-      bottom: 0.12rem;
+      bottom: 0.26rem;
 
       &__minus,
       &__plus {
@@ -357,7 +373,10 @@ export default {
     width: 0.98rem;
     background-color: #4fb0f9;
     text-align: center;
-    color: #fff;
     font-size: 0.14rem;
+    a {
+      color: $bgColor;
+      text-decoration: none;
+    }
   }
 }</style>

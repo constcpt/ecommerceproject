@@ -29,8 +29,8 @@ export default createStore({
       }
       let product = shopInfo[productId];
       if (!product) {
+        productInfo.count = 0;
         product = productInfo;
-        product.count = 0;
       }
       product.count = product.count + payload.num;
       if (payload.num > 0) {
