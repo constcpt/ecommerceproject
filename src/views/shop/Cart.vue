@@ -1,48 +1,40 @@
 <template>
   <div class="cart">
     <div class="product">
+      <div class="product__header"></div>
       <template v-for="item in productList" :key="item._id">
         <div class="product__item" v-if="item.count > 0">
+          <div 
+            class="product__item__checked iconfont" 
+            v-html="item.check ? '&#xe70f;': '&#xe6f7;'"
+            @click="() => changeCartItemChecked(shopId, item._id)"
+          >
+          </div>
           <img class="product__item__img" :src="item.imgUrl" />
           <div class="product__item__detail">
             <h4 class="product__item__title">{{ item.name }}</h4>
             <p class="product__item__price">
               <span class="product__item__yen">&dollar;</span>{{ item.price }}
-              <span class="product__item__origin"
-                >&dollar;{{ item.oldPrice }}</span
-              >
+              <span class="product__item__origin">&dollar;{{ item.oldPrice }}</span>
             </p>
           </div>
           <div class="product__number">
-            <span
-              class="product__number__minus"
-              @click="
-                () => {
-                  changeCartItemInfo(shopId, item._id, item, -1);
-                }
-              "
-              >-</span
-            >
+            <span class="product__number__minus" @click="() => {
+                changeCartItemInfo(shopId, item._id, item, -1);
+              }
+              ">-</span>
             {{ item.count || 0 }}
-            <span
-              class="product__number__plus"
-              @click="
-                () => {
-                  changeCartItemInfo(shopId, item._id, item, 1);
-                }
-              "
-              >+</span
-            >
+            <span class="product__number__plus" @click="() => {
+                changeCartItemInfo(shopId, item._id, item, 1);
+              }
+              ">+</span>
           </div>
         </div>
       </template>
     </div>
     <div class="check">
       <div class="check__icon">
-        <img
-          src="http://www.dell-lee.com/imgs/vue3/basket.png"
-          class="check__icon__img"
-        />
+        <img src="http://www.dell-lee.com/imgs/vue3/basket.png" class="check__icon__img" />
         <div class="check__icon__tag">{{ total }}</div>
       </div>
       <div class="check__info">
@@ -61,9 +53,11 @@ import { useCommonCartEffect } from './commonCartEffect'
 
 // 获取购物车信息逻辑
 const useCartEffect = (shopId) => {
+  const { changeCartItemInfo } = useCommonCartEffect();
   const store = useStore();
   const cartList = store.state.cartList;
 
+  // 计算商品总数
   const total = computed(() => {
     const productList = cartList[shopId];
     let count = 0;
@@ -76,13 +70,16 @@ const useCartEffect = (shopId) => {
     return count;
   });
 
+  // 计算商品总价
   const price = computed(() => {
     const productList = cartList[shopId];
     let count = 0;
     if (productList) {
       for (let i in productList) {
         const product = productList[i];
-        count += product.count * product.price;
+        if (product.check) {
+          count += product.count * product.price;
+        }
       }
     }
     return count.toFixed(2); // 控制小数点后两位
@@ -93,7 +90,10 @@ const useCartEffect = (shopId) => {
     return productList;
   });
 
-  return { total, price, productList };
+  const changeCartItemChecked = (shopId, productId) => {
+    store.commit('changeCartItemChecked', { shopId, productId })
+  }
+  return { total, price, productList, changeCartItemInfo, changeCartItemChecked };
 };
 
 export default {
@@ -101,9 +101,9 @@ export default {
   setup() {
     const route = useRoute();
     const shopId = route.params.id;
-    const { changeCartItemInfo } = useCommonCartEffect();
-    const { total, price, productList } = useCartEffect(shopId);
-    return { total, price, shopId, productList, changeCartItemInfo };
+
+    const { total, price, productList, changeCartItemInfo, changeCartItemChecked } = useCartEffect(shopId);
+    return { total, price, shopId, productList, changeCartItemInfo, changeCartItemChecked };
   }
 };
 </script>
@@ -111,30 +111,46 @@ export default {
 <style lang="scss" scoped>
 @import "../../style/variables.scss";
 @import "../../style/mixins.scss";
+
 .cart {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
 }
+
 .product {
   overflow-y: scroll;
   flex: 1;
   background: #FFF;
+  &__header {
+    height: .52rem;
+    border-bottom: 1px solid #F1F1F1;
+  }
   &__item {
     position: relative;
     display: flex;
     padding: 0.12rem 0;
     margin: 0 0.16rem;
     border-bottom: 0.01rem solid $content-bgColor;
+
+    &__checked {
+      line-height: .5rem;
+      margin-right: .2rem;
+      color: #0091FF;
+      font-size: .2rem;
+    }
+
     &__detail {
       overflow: hidden;
     }
+
     &__img {
       width: 0.46rem;
       height: 0.46rem;
       margin-right: 0.16rem;
     }
+
     &__title {
       margin: 0;
       line-height: 0.2rem;
@@ -142,15 +158,18 @@ export default {
       color: $content-fontcolor;
       @include ellipsis;
     }
+
     &__price {
       margin: .06rem 0 0 0;
       line-height: 0.2rem;
       font-size: 0.14rem;
       color: $hightlight-fontColor;
     }
+
     &__yen {
       font-size: 0.12rem;
     }
+
     &__origin {
       margin-left: 0.06rem;
       line-height: 0.2rem;
@@ -158,10 +177,12 @@ export default {
       color: $light-fontColor;
       text-decoration: line-through;
     }
+
     .product__number {
       position: absolute;
       right: 0;
       bottom: 0.12rem;
+
       &__minus,
       &__plus {
         display: inline-block;
@@ -172,11 +193,13 @@ export default {
         font-size: 0.2rem;
         text-align: center;
       }
+
       &__minus {
         border: 0.01rem solid $medium-fontColor;
         color: $medium-fontColor;
         margin-right: 0.05rem;
       }
+
       &__plus {
         background: $btn-bgColor;
         color: $bgColor;
@@ -185,20 +208,24 @@ export default {
     }
   }
 }
+
 .check {
   display: flex;
   height: 0.49rem;
   border-top: 0.01rem solid $content-bgColor;
   line-height: 0.49rem;
+
   &__icon {
     position: relative;
     width: 0.84rem;
+
     &__img {
       display: block;
       margin: 0.12rem auto;
       width: 0.3rem;
       height: 0.26rem;
     }
+
     &__tag {
       position: absolute;
       left: 0.46rem;
@@ -216,10 +243,12 @@ export default {
       transform-origin: left center;
     }
   }
+
   &__info {
     flex: 1;
     color: $content-fontcolor;
     font-size: 0.18rem;
+
     &__price {
       line-height: 0.49rem;
       color: $hightlight-fontColor;
@@ -227,6 +256,7 @@ export default {
       font-weight: bold;
     }
   }
+
   &__btn {
     width: 0.98rem;
     background-color: #4fb0f9;
@@ -234,5 +264,4 @@ export default {
     color: #fff;
     font-size: 0.14rem;
   }
-}
-</style>
+}</style>
