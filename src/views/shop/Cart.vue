@@ -76,12 +76,12 @@
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { useCommonCartEffect } from './commonCartEffect'
+import { useCommonCartEffect } from '../../effects/cartEffects';
 
 // 获取购物车信息逻辑
 const useCartEffect = (shopId) => {
   const store = useStore();
-  const { cartList, changeCartItemInfo } = useCommonCartEffect();
+  const { cartList, productList, changeCartItemInfo } = useCommonCartEffect(shopId);
 
   // 计算商品总数，商品总价，是否全选
   const calculations = computed(() => {
@@ -105,11 +105,6 @@ const useCartEffect = (shopId) => {
     }
     result.price = result.price.toFixed(2);
     return result;
-  });
-
-  const productList = computed(() => {
-    const productList = cartList[shopId]?.productList || [];
-    return productList;
   });
 
   const changeCartItemChecked = (shopId, productId) => {
