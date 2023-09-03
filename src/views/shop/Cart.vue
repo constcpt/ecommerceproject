@@ -66,7 +66,7 @@
         Total: <span class="check__info__price">&dollar;{{ calculations.price }}</span>
       </div>
       <div class="check__btn">
-        <router-link :to="{name: 'Home'}">Check Out</router-link>
+        <router-link :to="{path: `/orderConfirmation/${shopId}`}">Check Out</router-link>
       </div>
     </div>
   </div>
