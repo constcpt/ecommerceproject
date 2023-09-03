@@ -5,8 +5,9 @@ export default createStore({
     cartList: {
       // 第一层级是商店的id
       // shopId: {
-      // 第二层是商品id
-      // 第二层内容是商品内容以及购物数量
+      // 第二层是商店名称与商品列表，商店列表应当包含商品的 id 以及商品的详细信息
+      //   shopName: 'Coles',
+      //   productList: {
       //   productId: {
       //     _id: '1',
       //     name: '番茄250g/份',
@@ -17,17 +18,17 @@ export default createStore({
       //     count: 2
       //   },
       // },
+      // },
     },
   },
   getters: {},
   mutations: {
     changeCartItemInfo(state, payload) {
       const { shopId, productId, productInfo } = payload;
-      let shopInfo = state.cartList[shopId];
-      if (!shopInfo) {
-        shopInfo = {};
-      }
-      let product = shopInfo[productId];
+      let shopInfo = state.cartList[shopId] || {
+        shopName: "", productList: {}
+      };
+      let product = shopInfo.productList[productId];
       if (!product) {
         productInfo.count = 0;
         product = productInfo;
@@ -39,28 +40,37 @@ export default createStore({
       if (product.count < 0) {
         product.count = 0;
       }
-      shopInfo[productId] = product;
+      shopInfo.productList[productId] = product;
+      state.cartList[shopId] = shopInfo;
+    },
+    changeShopName(state, payload) {
+      const { shopId, shopName } = payload;
+      const shopInfo = state.cartList[shopId] || {
+        shopName: "",
+        productList: {},
+      };
+      shopInfo.shopName = shopName;
       state.cartList[shopId] = shopInfo;
     },
     changeCartItemChecked(state, payload) {
       const { shopId, productId } = payload;
-      const product = state.cartList[shopId][productId];
+      const product = state.cartList[shopId].productList[productId];
       product.check = !product.check;
     },
     cleanCartProducts(state, payload) {
       const { shopId } = payload;
-      state.cartList[shopId] = {};
+      state.cartList[shopId].productList = {};
     },
     setCartItemsChecked(state, payload) {
       const { shopId, isAllChecked } = payload;
-      const products = state.cartList[shopId];
+      const products = state.cartList[shopId].productList;
       if (products) {
         for (let key in products) {
           const product = products[key];
           product.check = isAllChecked;
         }
       }
-    }
+    },
   },
   actions: {},
   modules: {},
