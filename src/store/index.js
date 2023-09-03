@@ -24,24 +24,24 @@ const getLocalCartList = () => {
   //   },
   // },
   // },
-  if (localStorage.cartList) {
-    return JSON.parse(localStorage.cartList) || {};
-  }
-  else {
+  try {
+    return JSON.parse(localStorage.cartList);
+  } catch (e) {
     return {};
   }
 };
 
 export default createStore({
   state: {
-    cartList: getLocalCartList()
+    cartList: getLocalCartList(),
   },
   getters: {},
   mutations: {
     changeCartItemInfo(state, payload) {
       const { shopId, productId, productInfo } = payload;
       let shopInfo = state.cartList[shopId] || {
-        shopName: "", productList: {}
+        shopName: "",
+        productList: {},
       };
       let product = shopInfo.productList[productId];
       if (!product) {
@@ -90,7 +90,10 @@ export default createStore({
         }
       }
       setLocalCartList(state);
-    }
+    },
+    clearCartData(state, shopId) {
+      state.cartList[shopId].productList = {};
+    },
   },
   actions: {},
   modules: {},

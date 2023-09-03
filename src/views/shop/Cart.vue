@@ -1,6 +1,7 @@
 <template>
-  <div class="mask" 
-    v-if="showCart && calculations.total > 0" 
+  <div
+    class="mask"
+    v-if="showCart && calculations.total > 0"
     @click="handleCartShowChange"
   />
   <div class="cart">
@@ -12,61 +13,75 @@
         >
           <span
             class="product__header__icon iconfont"
-            v-html="calculations.allChecked ? '&#xe70f;': '&#xe6f7;'"
+            v-html="calculations.allChecked ? '&#xe70f;' : '&#xe6f7;'"
           >
           </span>
           All
         </div>
         <div class="product__header__clear">
-          <span 
+          <span
             class="product__header__clear__btn"
             @click="() => cleanCartProducts(shopId)"
-          >Clear</span>
+            >Clear</span
+          >
         </div>
       </div>
-      <template v-for="item in productList" :key="item._id">
-        <div class="product__item" v-if="item.count > 0">
-          <div 
-            class="product__item__checked iconfont" 
-            v-html="item.check ? '&#xe70f;': '&#xe6f7;'"
-            @click="() => changeCartItemChecked(shopId, item._id)"
-          />
-          <img class="product__item__img" :src="item.imgUrl" />
-          <div class="product__item__detail">
-            <h4 class="product__item__title">{{ item.name }}</h4>
-            <p class="product__item__price">
-              <span class="product__item__yen">&dollar;</span>{{ item.price }}
-              <span class="product__item__origin">&dollar;{{ item.oldPrice }}</span>
-            </p>
-          </div>
-          <div class="product__number">
-            <span class="product__number__minus" @click="() => {
+      <div class="product__item" v-for="item in productList" :key="item._id">
+        <div
+          class="product__item__checked iconfont"
+          v-html="item.check ? '&#xe70f;' : '&#xe6f7;'"
+          @click="() => changeCartItemChecked(shopId, item._id)"
+        />
+        <img class="product__item__img" :src="item.imgUrl" />
+        <div class="product__item__detail">
+          <h4 class="product__item__title">{{ item.name }}</h4>
+          <p class="product__item__price">
+            <span class="product__item__yen">&dollar;</span>{{ item.price }}
+            <span class="product__item__origin"
+              >&dollar;{{ item.oldPrice }}</span
+            >
+          </p>
+        </div>
+        <div class="product__number">
+          <span
+            class="product__number__minus"
+            @click="
+              () => {
                 changeCartItemInfo(shopId, item._id, item, -1);
               }
-              ">-</span>
-            {{ item.count || 0 }}
-            <span class="product__number__plus" @click="() => {
+            "
+            >-</span
+          >
+          {{ item.count || 0 }}
+          <span
+            class="product__number__plus"
+            @click="
+              () => {
                 changeCartItemInfo(shopId, item._id, item, 1);
               }
-              ">+</span>
-          </div>
+            "
+            >+</span
+          >
         </div>
-      </template>
+      </div>
     </div>
     <div class="check">
       <div class="check__icon">
-        <img 
-          src="http://www.dell-lee.com/imgs/vue3/basket.png" 
+        <img
+          src="http://www.dell-lee.com/imgs/vue3/basket.png"
           class="check__icon__img"
           @click="handleCartShowChange"
         />
         <div class="check__icon__tag">{{ calculations.total }}</div>
       </div>
       <div class="check__info">
-        Total: <span class="check__info__price">&dollar;{{ calculations.price }}</span>
+        Total:
+        <span class="check__info__price">&dollar;{{ calculations.price }}</span>
       </div>
       <div class="check__btn">
-        <router-link :to="{path: `/orderConfirmation/${shopId}`}">Check Out</router-link>
+        <router-link :to="{ path: `/orderConfirmation/${shopId}` }"
+          >Check Out</router-link
+        >
       </div>
     </div>
   </div>
@@ -76,12 +91,13 @@
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { useCommonCartEffect } from '../../effects/cartEffects';
+import { useCommonCartEffect } from "../../effects/cartEffects";
 
 // 获取购物车信息逻辑
 const useCartEffect = (shopId) => {
   const store = useStore();
-  const { cartList, productList, changeCartItemInfo } = useCommonCartEffect(shopId);
+  const { cartList, productList, changeCartItemInfo } =
+    useCommonCartEffect(shopId);
 
   // 计算商品总数，商品总价，是否全选
   const calculations = computed(() => {
@@ -89,7 +105,7 @@ const useCartEffect = (shopId) => {
     let result = {
       total: 0,
       price: 0,
-      allChecked: true
+      allChecked: true,
     };
     if (productList) {
       for (let i in productList) {
@@ -108,27 +124,31 @@ const useCartEffect = (shopId) => {
   });
 
   const changeCartItemChecked = (shopId, productId) => {
-    store.commit('changeCartItemChecked', { shopId, productId })
-  }
+    store.commit("changeCartItemChecked", { shopId, productId });
+  };
 
   const cleanCartProducts = (shopId) => {
-    store.commit('cleanCartProducts', { shopId })
-  }
+    store.commit("cleanCartProducts", { shopId });
+  };
 
   const setCartItemsChecked = (shopId) => {
     let isAllChecked = true;
-    if(calculations.value.allChecked) {
+    if (calculations.value.allChecked) {
       isAllChecked = false;
-    }
-    else {
+    } else {
       isAllChecked = true;
     }
-    store.commit('setCartItemsChecked', { shopId, isAllChecked })
-  }
-  
-  return { 
-    calculations, productList,
-    changeCartItemInfo, changeCartItemChecked, cleanCartProducts, setCartItemsChecked  };
+    store.commit("setCartItemsChecked", { shopId, isAllChecked });
+  };
+
+  return {
+    calculations,
+    productList,
+    changeCartItemInfo,
+    changeCartItemChecked,
+    cleanCartProducts,
+    setCartItemsChecked,
+  };
 };
 
 // 展示和隐藏购物车列表的逻辑
@@ -146,17 +166,27 @@ export default {
     const route = useRoute();
     const shopId = route.params.id;
 
-    const { 
-      calculations, productList, 
-      changeCartItemInfo, changeCartItemChecked, 
-      cleanCartProducts, setCartItemsChecked } = useCartEffect(shopId);
+    const {
+      calculations,
+      productList,
+      changeCartItemInfo,
+      changeCartItemChecked,
+      cleanCartProducts,
+      setCartItemsChecked,
+    } = useCartEffect(shopId);
     const { showCart, handleCartShowChange } = toggleCartEffect();
-    return { 
-      calculations, shopId, productList, showCart,
-      changeCartItemInfo, changeCartItemChecked, cleanCartProducts, 
-      setCartItemsChecked, handleCartShowChange
+    return {
+      calculations,
+      shopId,
+      productList,
+      showCart,
+      changeCartItemInfo,
+      changeCartItemChecked,
+      cleanCartProducts,
+      setCartItemsChecked,
+      handleCartShowChange,
     };
-  }
+  },
 };
 </script>
 
@@ -170,7 +200,7 @@ export default {
   right: 0;
   bottom: 0;
   top: 0;
-  background: rgba(0, 0, 0, .5);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
 
@@ -189,24 +219,24 @@ export default {
   background: $bgColor;
   &__header {
     display: flex;
-    line-height: .52rem;
+    line-height: 0.52rem;
     border-bottom: 1px solid $content-bgColor;
-    font-size: .14rem;
+    font-size: 0.14rem;
     color: $content-fontcolor;
     &__all {
-      width: .64rem;
-      margin-left: .18rem;
+      width: 0.64rem;
+      margin-left: 0.18rem;
     }
     &__icon {
       display: inline-block;
-      margin-right: .1rem;
+      margin-right: 0.1rem;
       vertical-align: top;
       color: $btn-bgColor;
-      font-size: .2rem;
+      font-size: 0.2rem;
     }
     &__clear {
       flex: 1;
-      margin-right: .16rem;
+      margin-right: 0.16rem;
       text-align: right;
       &__btn {
         display: inline-block;
@@ -221,10 +251,10 @@ export default {
     border-bottom: 0.01rem solid $content-bgColor;
 
     &__checked {
-      line-height: .5rem;
-      margin-right: .2rem;
+      line-height: 0.5rem;
+      margin-right: 0.2rem;
       color: $btn-bgColor;
-      font-size: .2rem;
+      font-size: 0.2rem;
     }
 
     &__detail {
@@ -246,7 +276,7 @@ export default {
     }
 
     &__price {
-      margin: .06rem 0 0 0;
+      margin: 0.06rem 0 0 0;
       line-height: 0.2rem;
       font-size: 0.14rem;
       color: $hightlight-fontColor;
@@ -353,4 +383,5 @@ export default {
       text-decoration: none;
     }
   }
-}</style>
+}
+</style>

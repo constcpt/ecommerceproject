@@ -1,121 +1,153 @@
 <template>
-    <div class="order">
-      <div class="order__price">Pay <b>&dollar;{{calculations.price}}</b></div>
-      <div class="order__btn">Submit</div>
+  <div class="order">
+    <div class="order__price">
+      Pay <b>&dollar;{{ calculations.price }}</b>
     </div>
-    <div class="mask">
-      <div class="mask__content">
-        <h3 class="mask__content__title">Sure to submit your order?</h3>
-        <p class="mask__content__desc">Please complete payment or it will be canceled</p>
-        <div class="mask__content__btns">
-          <div
-            class="mask__content__btn mask__content__btn--first"
-            @click="handleCancelOrder"
-          >Cancel</div>
-          <div
-            class="mask__content__btn mask__content__btn--last"
-            @click="handleConfirmOrder"
-          >Pay</div>
+    <div class="order__btn">Submit</div>
+  </div>
+  <div class="mask">
+    <div class="mask__content">
+      <h3 class="mask__content__title">Sure to submit your order?</h3>
+      <p class="mask__content__desc">
+        Please complete payment or it will be canceled
+      </p>
+      <div class="mask__content__btns">
+        <div
+          class="mask__content__btn mask__content__btn--first"
+          @click="() => handleConfirmOrder(true)"
+        >
+          Cancel
+        </div>
+        <div
+          class="mask__content__btn mask__content__btn--last"
+          @click="() => handleConfirmOrder(false)"
+        >
+          Pay
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import { useRoute } from 'vue-router'
-  import { useCommonCartEffect } from '../../effects/cartEffects'
-  export default {
-    name: 'Order',
-    setup() {
-      const route = useRoute()
-      const shopId = route.params.id
-      const { calculations } = useCommonCartEffect(shopId)
-      const handleCancelOrder = () => {
-        alert('cancel')
+  </div>
+</template>
+
+<script>
+import { useRouter, useRoute } from "vue-router";
+import { useStore } from "vuex";
+import { post } from "../../utils/request";
+import { useCommonCartEffect } from "../../effects/cartEffects";
+export default {
+  name: "Order",
+  setup() {
+    const router = useRouter();
+    const route = useRoute();
+    const store = useStore();
+
+    const shopId = parseInt(route.params.id, 10);
+    const { calculations, shopName, productList } = useCommonCartEffect(shopId);
+
+    const handleConfirmOrder = async (isCanceled) => {
+      const products = [];
+      for (let i in productList.value) {
+        const product = productList.value[i];
+        products.push({ id: parseInt(product._id, 10), num: product.count });
       }
-      const handleConfirmOrder= () => {
-        alert('confirm')
+      console.log(products);
+      try {
+        const result = await post("/api/order", {
+          addressId: 1,
+          shopId,
+          shopName: shopName.value,
+          isCanceled,
+          products
+        });
+        if (result?.errno === 0) {
+          store.commit("clearCartData", shopId);
+          router.push({ name: "Home" });
+        }
+      } catch (e) {
+        // 提示下单失败
       }
-      return { calculations, handleCancelOrder, handleConfirmOrder }
-    }
+    };
+
+    return { calculations, handleConfirmOrder };
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+@import "../../style/variables.scss";
+.order {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  height: 0.49rem;
+  line-height: 0.49rem;
+  background: $bgColor;
+  &__price {
+    flex: 1;
+    text-indent: 0.24rem;
+    font-size: 0.14rem;
+    color: $content-fontcolor;
   }
-  </script>
-  
-  <style lang="scss" scoped>
-  @import '../../style/variables.scss';
-  .order {
+  &__btn {
+    width: 0.98rem;
+    background: #4fb0f9;
+    color: #fff;
+    text-align: center;
+    font-size: 0.14rem;
+  }
+}
+.mask {
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background: rgba(0, 0, 0, 0.5);
+  &__content {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    height: .49rem;
-    line-height: .49rem;
-    background: $bgColor;
-    &__price {
-      flex: 1;
-      text-indent: .24rem;
-      font-size: .14rem;
-      color: $content-fontcolor;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 3rem;
+    height: 1.56rem;
+    background: #fff;
+    text-align: center;
+    border-radius: 0.04rem;
+    &__title {
+      margin: 0.24rem 0 0 0;
+      line-height: 0.26rem;
+      font-size: 0.18rem;
+      color: #333;
+    }
+    &__desc {
+      margin: 0.08rem 0 0 0;
+      font-size: 0.14rem;
+      color: #666666;
+    }
+    &__btns {
+      display: flex;
+      margin: 0.24rem 0.58rem;
     }
     &__btn {
-      width: .98rem;
-      background: #4FB0F9;
-      color: #fff;
-      text-align: center;
-      font-size: .14rem;
-    }
-  }
-  .mask {
-    z-index: 1;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 0;
-    background: rgba(0,0,0,0.50);
-    &__content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 3rem;
-      height: 1.56rem;
-      background: #FFF;
-      text-align: center;
-      border-radius: .04rem;
-      &__title {
-        margin: .24rem 0 0 0;
-        line-height: .26rem;
-        font-size: .18rem;
-        color: #333;
+      flex: 1;
+      width: 0.8rem;
+      line-height: 0.32rem;
+      border-radius: 0.16rem;
+      font-size: 0.14rem;
+      &--first {
+        margin-right: 0.12rem;
+        border: 0.01rem solid #4fb0f9;
+        color: #4fb0f9;
       }
-      &__desc {
-        margin: .08rem 0 0 0;
-        font-size: .14rem;
-        color: #666666;
-      }
-      &__btns {
-        display: flex;
-        margin: .24rem .58rem;
-      }
-      &__btn {
-        flex: 1;
-        width: .8rem;
-        line-height: .32rem;
-        border-radius: .16rem;
-        font-size: .14rem;
-        &--first {
-          margin-right: .12rem;
-          border: .01rem solid #4FB0F9;
-          color: #4FB0F9;
-        }
-        &--last {
-          margin-left: .12rem;
-          background: #4FB0F9;
-          color: #fff;
-        }
+      &--last {
+        margin-left: 0.12rem;
+        background: #4fb0f9;
+        color: #fff;
       }
     }
   }
-  </style>
+}
+</style>
