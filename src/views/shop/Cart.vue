@@ -1,10 +1,10 @@
 <template>
   <div class="mask" 
-    v-if="showCart" 
+    v-if="showCart && calculations.total > 0" 
     @click="handleCartShowChange"
   />
   <div class="cart">
-    <div class="product" v-if="showCart">
+    <div class="product" v-if="showCart && calculations.total > 0">
       <div class="product__header">
         <div
           class="product__header__all"
@@ -12,7 +12,7 @@
         >
           <span
             class="product__header__icon iconfont"
-            v-html="allChecked ? '&#xe70f;': '&#xe6f7;'"
+            v-html="calculations.allChecked ? '&#xe70f;': '&#xe6f7;'"
           >
           </span>
           All
@@ -60,10 +60,10 @@
           class="check__icon__img"
           @click="handleCartShowChange"
         />
-        <div class="check__icon__tag">{{ total }}</div>
+        <div class="check__icon__tag">{{ calculations.total }}</div>
       </div>
       <div class="check__info">
-        Total: <span class="check__info__price">&dollar;{{ price }}</span>
+        Total: <span class="check__info__price">&dollar;{{ calculations.price }}</span>
       </div>
       <div class="check__btn">
         <router-link :to="{name: 'Home'}">Check Out</router-link>
@@ -80,52 +80,32 @@ import { useCommonCartEffect } from './commonCartEffect'
 
 // 获取购物车信息逻辑
 const useCartEffect = (shopId) => {
-  const { changeCartItemInfo } = useCommonCartEffect();
   const store = useStore();
-  const cartList = store.state.cartList;
+  const { cartList, changeCartItemInfo } = useCommonCartEffect();
 
-  // 计算商品总数
-  const total = computed(() => {
+  // 计算商品总数，商品总价，是否全选
+  const calculations = computed(() => {
     const productList = cartList[shopId]?.productList;
-    let count = 0;
+    let result = {
+      total: 0,
+      price: 0,
+      allChecked: true
+    };
     if (productList) {
       for (let i in productList) {
         const product = productList[i];
-        count += product.count;
-      }
-    }
-    return count;
-  });
-
-  // 计算商品总价
-  const price = computed(() => {
-    const productList = cartList[shopId]?.productList;
-    let count = 0;
-    if (productList) {
-      for (let i in productList) {
-        const product = productList[i];
+        result.total += product.count;
         if (product.check) {
-          count += product.count * product.price;
+          result.price += product.count * product.price;
+        }
+        if (product.count > 0 && !product.check) {
+          result.allChecked = false;
         }
       }
     }
-    return count.toFixed(2); // 控制小数点后两位
+    result.price = result.price.toFixed(2);
+    return result;
   });
-
-  // 计算是否全选
-  const allChecked = computed(() => {
-      const productList = cartList[shopId]?.productList;
-      let result = true
-      if(productList) {
-         for(let i in productList) {
-           const product = productList[i]
-           if(product.count > 0 && !product.check) {
-             result = false
-           }
-        }
-      }
-      return result
-    });
 
   const productList = computed(() => {
     const productList = cartList[shopId]?.productList || [];
@@ -142,7 +122,7 @@ const useCartEffect = (shopId) => {
 
   const setCartItemsChecked = (shopId) => {
     let isAllChecked = true;
-    if(allChecked.value) {
+    if(calculations.value.allChecked) {
       isAllChecked = false;
     }
     else {
@@ -152,7 +132,7 @@ const useCartEffect = (shopId) => {
   }
   
   return { 
-    total, price, productList, allChecked,
+    calculations, productList,
     changeCartItemInfo, changeCartItemChecked, cleanCartProducts, setCartItemsChecked  };
 };
 
@@ -172,13 +152,12 @@ export default {
     const shopId = route.params.id;
 
     const { 
-      total, price, productList, allChecked, 
+      calculations, productList, 
       changeCartItemInfo, changeCartItemChecked, 
       cleanCartProducts, setCartItemsChecked } = useCartEffect(shopId);
     const { showCart, handleCartShowChange } = toggleCartEffect();
     return { 
-      total, price, shopId, 
-      productList, allChecked, showCart,
+      calculations, shopId, productList, showCart,
       changeCartItemInfo, changeCartItemChecked, cleanCartProducts, 
       setCartItemsChecked, handleCartShowChange
     };

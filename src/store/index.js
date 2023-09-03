@@ -1,25 +1,40 @@
 import { createStore } from 'vuex'
 
+const setLocalCartList = (state) => {
+  const { cartList } = state;
+  const cartListString = JSON.stringify(cartList);
+  localStorage.cartList = cartListString;
+};
+
+const getLocalCartList = () => {
+  // { shopId: {shopName:'', productList:{ productId: {} }}}
+  // 第一层级是商店的id
+  // shopId: {
+  // 第二层是商店名称与商品列表，商店列表应当包含商品的 id 以及商品的详细信息
+  //   shopName: 'Coles',
+  //   productList: {
+  //   productId: {
+  //     _id: '1',
+  //     name: '番茄250g/份',
+  //     imgUrl: 'http://www.dell-lee.com/imgs/vue3/tomato.png',
+  //     sales: 10,
+  //     price: 33.6,
+  //     oldPrice: 39.6,
+  //     count: 2
+  //   },
+  // },
+  // },
+  if (localStorage.cartList) {
+    return JSON.parse(localStorage.cartList) || {};
+  }
+  else {
+    return {};
+  }
+};
+
 export default createStore({
   state: {
-    cartList: {
-      // 第一层级是商店的id
-      // shopId: {
-      // 第二层是商店名称与商品列表，商店列表应当包含商品的 id 以及商品的详细信息
-      //   shopName: 'Coles',
-      //   productList: {
-      //   productId: {
-      //     _id: '1',
-      //     name: '番茄250g/份',
-      //     imgUrl: 'http://www.dell-lee.com/imgs/vue3/tomato.png',
-      //     sales: 10,
-      //     price: 33.6,
-      //     oldPrice: 39.6,
-      //     count: 2
-      //   },
-      // },
-      // },
-    },
+    cartList: getLocalCartList()
   },
   getters: {},
   mutations: {
@@ -42,6 +57,7 @@ export default createStore({
       }
       shopInfo.productList[productId] = product;
       state.cartList[shopId] = shopInfo;
+      setLocalCartList(state);
     },
     changeShopName(state, payload) {
       const { shopId, shopName } = payload;
@@ -51,15 +67,18 @@ export default createStore({
       };
       shopInfo.shopName = shopName;
       state.cartList[shopId] = shopInfo;
+      setLocalCartList(state);
     },
     changeCartItemChecked(state, payload) {
       const { shopId, productId } = payload;
       const product = state.cartList[shopId].productList[productId];
       product.check = !product.check;
+      setLocalCartList(state);
     },
     cleanCartProducts(state, payload) {
       const { shopId } = payload;
       state.cartList[shopId].productList = {};
+      setLocalCartList(state);
     },
     setCartItemsChecked(state, payload) {
       const { shopId, isAllChecked } = payload;
@@ -70,7 +89,8 @@ export default createStore({
           product.check = isAllChecked;
         }
       }
-    },
+      setLocalCartList(state);
+    }
   },
   actions: {},
   modules: {},
