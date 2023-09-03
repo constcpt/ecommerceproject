@@ -78,7 +78,7 @@
         Total:
         <span class="check__info__price">&dollar;{{ calculations.price }}</span>
       </div>
-      <div class="check__btn">
+      <div class="check__btn" v-show="calculations.total > 0">
         <router-link :to="{ path: `/orderConfirmation/${shopId}` }"
           >Check Out</router-link
         >
