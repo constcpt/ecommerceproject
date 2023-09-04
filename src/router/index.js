@@ -63,6 +63,14 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "address" */ "../views/address/Address"),
   },
+  {
+    path: "/addressEdit",
+    name: "AddressEdit",
+    component: () =>
+      import(
+        /* webpackChunkName: "addressEdit" */ "../views/addressEdit/AddressEdit"
+      ),
+  },
   // {
   //   path: '/about',
   //   name: 'about',
