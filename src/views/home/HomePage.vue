@@ -3,13 +3,13 @@
         <StaticPart />
         <NearbyShops />
     </div>
-    <DockerBar />
+    <DockerBar :currentIndex="0"/>
 </template>
 
 <script>
 import StaticPart from './StaticPart.vue'
 import NearbyShops from './NearbyShops.vue'
-import DockerBar from './DockerBar.vue'
+import DockerBar from '../../components/DockerBar.vue'
 export default {
   name: 'HomePage',
   components: {

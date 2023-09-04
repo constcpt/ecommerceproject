@@ -2,7 +2,7 @@
   <div class="docker">
     <div
       v-for="(item, index) in dockerList"
-      :class="{'docker__item': true, 'docker__item--active': index === 0}"
+      :class="{'docker__item': true, 'docker__item--active': index === currentIndex}"
       :key="item.icon"
     >
       <router-link :to='item.to'>
@@ -16,12 +16,13 @@
 <script>
 export default {
   name: 'DockerBar',
+  props: ['currentIndex'],
   // Composition API
   setup () {
     const dockerList = [
       { icon: '&#xe609;', text: 'Home', to: { name: 'Home' } },
       { icon: '&#xe6af;', text: 'Cart', to: { name: 'CartList' } },
-      { icon: '&#xe61e;', text: 'Orders', to: { name: 'Home' } },
+      { icon: '&#xe61e;', text: 'Orders', to: { name: 'OrderList' } },
       { icon: '&#xe6b3;', text: 'My', to: { name: 'Home' } }
     ]
     return { dockerList }
@@ -29,7 +30,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import "../../style/variables.scss";
+@import "../style/variables.scss";
 .docker {
   display: flex;
   box-sizing: border-box;
