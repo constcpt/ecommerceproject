@@ -57,6 +57,12 @@ const routes = [
       isLogin ? next({ name: "Home" }) : next();
     },
   },
+  {
+    path: "/address",
+    name: "Address",
+    component: () =>
+      import(/* webpackChunkName: "address" */ "../views/address/Address"),
+  },
   // {
   //   path: '/about',
   //   name: 'about',
