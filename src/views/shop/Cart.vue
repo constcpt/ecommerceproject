@@ -1,77 +1,44 @@
 <template>
-  <div
-    class="mask"
-    v-if="showCart && calculations.total > 0"
-    @click="handleCartShowChange"
-  />
+  <div class="mask" v-if="showCart && calculations.total > 0" @click="handleCartShowChange" />
   <div class="cart">
     <div class="product" v-if="showCart && calculations.total > 0">
       <div class="product__header">
-        <div
-          class="product__header__all"
-          @click="() => setCartItemsChecked(shopId)"
-        >
-          <span
-            class="product__header__icon iconfont"
-            v-html="calculations.allChecked ? '&#xe70f;' : '&#xe6f7;'"
-          >
+        <div class="product__header__all" @click="() => setCartItemsChecked(shopId)">
+          <span class="product__header__icon iconfont" v-html="calculations.allChecked ? '&#xe70f;' : '&#xe6f7;'">
           </span>
           All
         </div>
         <div class="product__header__clear">
-          <span
-            class="product__header__clear__btn"
-            @click="() => cleanCartProducts(shopId)"
-            >Clear</span
-          >
+          <span class="product__header__clear__btn" @click="() => cleanCartProducts(shopId)">Clear</span>
         </div>
       </div>
       <div class="product__item" v-for="item in productList" :key="item._id">
-        <div
-          class="product__item__checked iconfont"
-          v-html="item.check ? '&#xe70f;' : '&#xe6f7;'"
-          @click="() => changeCartItemChecked(shopId, item._id)"
-        />
+        <div class="product__item__checked iconfont" v-html="item.check ? '&#xe70f;' : '&#xe6f7;'"
+          @click="() => changeCartItemChecked(shopId, item._id)" />
         <img class="product__item__img" :src="item.imgUrl" />
         <div class="product__item__detail">
           <h4 class="product__item__title">{{ item.name }}</h4>
           <p class="product__item__price">
             <span class="product__item__yen">&dollar;</span>{{ item.price }}
-            <span class="product__item__origin"
-              >&dollar;{{ item.oldPrice }}</span
-            >
+            <span class="product__item__origin">&dollar;{{ item.oldPrice }}</span>
           </p>
         </div>
         <div class="product__number">
-          <span
-            class="product__number__minus"
-            @click="
-              () => {
-                changeCartItemInfo(shopId, item._id, item, -1);
-              }
-            "
-            >-</span
-          >
+          <span class="product__number__minus" @click="() => {
+              changeCartItemInfo(shopId, item._id, item, -1);
+            }
+            ">-</span>
           {{ item.count || 0 }}
-          <span
-            class="product__number__plus"
-            @click="
-              () => {
-                changeCartItemInfo(shopId, item._id, item, 1);
-              }
-            "
-            >+</span
-          >
+          <span class="product__number__plus" @click="() => {
+              changeCartItemInfo(shopId, item._id, item, 1);
+            }
+            ">+</span>
         </div>
       </div>
     </div>
     <div class="check">
       <div class="check__icon">
-        <img
-          src="http://www.dell-lee.com/imgs/vue3/basket.png"
-          class="check__icon__img"
-          @click="handleCartShowChange"
-        />
+        <img src="http://www.dell-lee.com/imgs/vue3/basket.png" class="check__icon__img" @click="handleCartShowChange" />
         <div class="check__icon__tag">{{ calculations.total }}</div>
       </div>
       <div class="check__info">
@@ -79,9 +46,7 @@
         <span class="check__info__price">&dollar;{{ calculations.price }}</span>
       </div>
       <div class="check__btn" v-show="calculations.total > 0">
-        <router-link :to="{ path: `/orderConfirmation/${shopId}` }"
-          >Check Out</router-link
-        >
+        <router-link :to="{ path: `/orderConfirmation/${shopId}` }">Check Out</router-link>
       </div>
     </div>
   </div>
@@ -217,16 +182,19 @@ export default {
   overflow-y: scroll;
   flex: 1;
   background: $bgColor;
+
   &__header {
     display: flex;
     line-height: 0.52rem;
-    border-bottom: 1px solid $content-bgColor;
+    border-bottom: .01rem solid $content-bgColor;
     font-size: 0.14rem;
     color: $content-fontcolor;
+
     &__all {
       width: 0.64rem;
       margin-left: 0.18rem;
     }
+
     &__icon {
       display: inline-block;
       margin-right: 0.1rem;
@@ -234,15 +202,18 @@ export default {
       color: $btn-bgColor;
       font-size: 0.2rem;
     }
+
     &__clear {
       flex: 1;
       margin-right: 0.16rem;
       text-align: right;
+
       &__btn {
         display: inline-block;
       }
     }
   }
+
   &__item {
     position: relative;
     display: flex;
@@ -378,6 +349,7 @@ export default {
     background-color: #4fb0f9;
     text-align: center;
     font-size: 0.14rem;
+
     a {
       color: $bgColor;
       text-decoration: none;

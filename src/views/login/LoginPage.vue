@@ -5,13 +5,8 @@
             <input class="wrapper__input__content" placeholder="User name " v-model="username" />
         </div>
         <div class="wrapper__input">
-            <input 
-                class="wrapper__input__content" 
-                placeholder="Password" 
-                type="password" 
-                v-model="password" 
-                autocomplete="new-password"
-            />
+            <input class="wrapper__input__content" placeholder="Password" type="password" v-model="password"
+                autocomplete="new-password" />
         </div>
         <div class="wrapper__login-button" @click="handleLogin">Sign in</div>
         <div class="wrapper__login-link" @click="handleRegisterClick">Sign up</div>
@@ -31,7 +26,7 @@ const useLoginEffect = (showToast) => {
     const data = reactive({ username: '', password: '' });
     const handleLogin = async () => {
         // 对用户输入的数据进行校验
-        if (!data.username ) {
+        if (!data.username) {
             showToast('Please enter your user name!');
             return;
         }
@@ -107,18 +102,20 @@ export default {
         margin: 0 .4rem .16rem .4rem;
         padding: 0 .16rem;
         background: #F9F9F9;
-        border: 1px solid rgba(0, 0, 0, 0.10);
-        border-radius: 6px;
-        border-radius: 6px;
-        font-size: .16rem;
+        border: .01rem solid rgba(0, 0, 0, 0.10);
+        border-radius: .06rem;
+        border-radius: .06rem;
+
 
         &__content {
             width: 100%;
-            line-height: .48rem;
+            margin-top: .12rem;
+            line-height: .22rem;
             border: none;
             outline: none;
             background: none;
             color: $content-notice-fontcolor;
+            font-size: .16rem;
 
             &::placeholder {
                 color: #999;

@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from "vue-router";
 
 const routes = [
   {
@@ -71,6 +71,14 @@ const routes = [
         /* webpackChunkName: "addressEdit" */ "../views/addressEdit/AddressEdit"
       ),
   },
+  {
+    path: "/addressSelect",
+    name: "addressSelect",
+    component: () =>
+      import(
+        /* webpackChunkName: "addressSelect" */ "../views/addressSelect/AddressSelect"
+      ),
+  },
   // {
   //   path: '/about',
   //   name: 'about',
@@ -83,7 +91,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
 });
 
 router.beforeEach((to, from, next) => {
@@ -93,5 +101,4 @@ router.beforeEach((to, from, next) => {
   isLogin || isLoginOrRegister ? next() : next({ name: "Login" });
 });
 
-
-export default router
+export default router;

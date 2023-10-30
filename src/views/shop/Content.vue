@@ -4,15 +4,10 @@
       <!-- <div class="category__item category__item--active">Products</div>
       <div class="category__item">Fruits</div>
       <div class="category__item">Seafood</div> -->
-      <div
-        :class="{
-          category__item: true,
-          'category__item--active': currentTab === item.tab,
-        }"
-        v-for="item in categories"
-        :key="item.name"
-        @click="() => handleTabClick(item.tab)"
-      >
+      <div :class="{
+        category__item: true,
+        'category__item--active': currentTab === item.tab,
+      }" v-for="item in categories" :key="item.name" @click="() => handleTabClick(item.tab)">
         {{ item.name }}
       </div>
     </div>
@@ -26,21 +21,15 @@
           </p>
           <p class="product__item__price">
             <span class="product__item__yen">&dollar;</span>{{ item.price }}
-            <span class="product__item__origin"
-              >&dollar;{{ item.oldPrice }}</span
-            >
+            <span class="product__item__origin">&dollar;{{ item.oldPrice }}</span>
           </p>
         </div>
         <div class="product__number">
-          <span 
-            class="product__number__minus"
-            @click="() => { changeCartItem(shopId, item._id, item, -1, shopName) }"
-          >-</span>
-            {{getProductCartCount(shopId, item._id)}}
-          <span 
-            class="product__number__plus"
-            @click="() => { changeCartItem(shopId, item._id, item, 1, shopName) }"
-          >+</span>
+          <span class="product__number__minus"
+            @click="() => { changeCartItem(shopId, item._id, item, -1, shopName) }">-</span>
+          {{ getProductCartCount(shopId, item._id) }}
+          <span class="product__number__plus"
+            @click="() => { changeCartItem(shopId, item._id, item, 1, shopName) }">+</span>
         </div>
       </div>
       <!-- <div class="product__item">
@@ -203,8 +192,10 @@ export default {
     const { list } = useCurrentListEffect(currentTab, shopId)
     const { changeCartItem, cartList, getProductCartCount } = useCartEffect()
 
-    return { categories, currentTab, handleTabClick, list,
-             shopId, changeCartItem, cartList, getProductCartCount }
+    return {
+      categories, currentTab, handleTabClick, list,
+      shopId, changeCartItem, cartList, getProductCartCount
+    }
   }
 };
 </script>
@@ -212,6 +203,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../style/variables.scss";
 @import "../../style/mixins.scss";
+
 .content {
   display: flex;
   position: absolute;
@@ -220,40 +212,48 @@ export default {
   top: 1.7rem;
   bottom: 0.5rem;
 }
+
 .category {
   overflow-y: hidden;
 
   height: 100%;
   width: 0.76rem;
   background: $search-bgColor;
+
   &__item {
     line-height: 0.4rem;
     text-align: center;
-    font-size: 14px;
+    font-size: .14rem;
     font-weight: bold;
     color: #333;
+
     &--active {
       background: $bgColor;
     }
   }
 }
+
 .product {
   overflow-y: scroll;
   flex: 1;
+
   &__item {
     position: relative;
     display: flex;
     padding: 0.12rem 0;
     margin: 0 0.16rem;
     border-bottom: 0.01rem solid $content-bgColor;
+
     &__detail {
       overflow: hidden;
     }
+
     &__img {
       width: 0.68rem;
       height: 0.68rem;
       margin-right: 0.16rem;
     }
+
     &__title {
       margin: 0;
       line-height: 0.2rem;
@@ -261,20 +261,24 @@ export default {
       color: $content-fontcolor;
       @include ellipsis;
     }
+
     &__sales {
       margin: 0.06rem 0;
       font-size: 0.12rem;
       color: $content-fontcolor;
     }
+
     &__price {
       margin: 0;
       line-height: 0.2rem;
       font-size: 0.14rem;
       color: $hightlight-fontColor;
     }
+
     &__yen {
       font-size: 0.12rem;
     }
+
     &__origin {
       margin-left: 0.06rem;
       line-height: 0.2rem;
@@ -282,10 +286,12 @@ export default {
       color: $light-fontColor;
       text-decoration: line-through;
     }
+
     .product__number {
       position: absolute;
       right: 0;
       bottom: 0.12rem;
+
       &__minus,
       &__plus {
         display: inline-block;
@@ -296,11 +302,13 @@ export default {
         font-size: 0.2rem;
         text-align: center;
       }
+
       &__minus {
         border: 0.01rem solid $medium-fontColor;
         color: $medium-fontColor;
         margin-right: 0.05rem;
       }
+
       &__plus {
         background: $btn-bgColor;
         color: $bgColor;
@@ -308,5 +316,4 @@ export default {
       }
     }
   }
-}
-</style>
+}</style>

@@ -11,11 +11,11 @@
             <h4 class="products__item__title">{{ item.name }}</h4>
             <p class="products__item__price">
               <span>
-                <span class="products__item__yen">&yen; </span>
+                <span class="products__item__yen">&dollar; </span>
                 {{ item.price }} x {{ item.count }}
               </span>
               <span class="products__item__total">
-                <span class="products__item__yen">&yen; </span>
+                <span class="products__item__yen">&dollar; </span>
                 {{ (item.price * item.count).toFixed(2) }}
               </span>
             </p>
@@ -43,14 +43,17 @@ export default {
 <style lang="scss" scoped>
 @import "../../style/variables.scss";
 @import "../../style/mixins.scss";
+
 .products {
   margin: 0.16rem 0.18rem 0.1rem 0.18rem;
   background: $bgColor;
+
   &__title {
     padding: 0.16rem;
     font-size: 0.16rem;
     color: $content-fontcolor;
   }
+
   &__wrapper {
     overflow-y: scroll;
     margin: 0 0.18rem;
@@ -60,21 +63,26 @@ export default {
     bottom: 0.6rem;
     top: 2.6rem;
   }
+
   &__list {
     background: $bgColor;
   }
+
   &__item {
     position: relative;
     display: flex;
     padding: 0 0.16rem 0.16rem 0.16rem;
+
     &__img {
       width: 0.46rem;
       height: 0.46rem;
       margin-right: 0.16rem;
     }
+
     &__detail {
       flex: 1;
     }
+
     &__title {
       margin: 0;
       line-height: 0.2rem;
@@ -82,6 +90,7 @@ export default {
       color: $content-fontcolor;
       @include ellipsis;
     }
+
     &__price {
       display: flex;
       margin: 0.06rem 0 0 0;
@@ -89,14 +98,15 @@ export default {
       font-size: 0.14rem;
       color: $hightlight-fontColor;
     }
+
     &__total {
       flex: 1;
       text-align: right;
       color: $dark-fontColor;
     }
+
     &__yen {
       font-size: 0.12rem;
     }
   }
-}
-</style>
+}</style>
